@@ -16,10 +16,6 @@ class Insurance
     #[ORM\Column]
     private ?float $price = null;
 
-    #[ORM\OneToOne(inversedBy: 'insurance', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Reservation $reservation = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -33,18 +29,6 @@ class Insurance
     public function setPrice(float $price): static
     {
         $this->price = $price;
-
-        return $this;
-    }
-
-    public function getReservation(): ?Reservation
-    {
-        return $this->reservation;
-    }
-
-    public function setReservation(Reservation $reservation): static
-    {
-        $this->reservation = $reservation;
 
         return $this;
     }

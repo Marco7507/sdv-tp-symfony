@@ -16,7 +16,6 @@ class CreateReservationUseCase
         private CarRepository $carRepository,
     )
     {
-        
     }
 
     function execute(DateTimeInterface $startDate, DateTimeInterface $endDate, int $carId, User $user): Reservation

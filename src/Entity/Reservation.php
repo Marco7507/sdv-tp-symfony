@@ -34,7 +34,7 @@ class Reservation
     #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
 
-    #[ORM\OneToOne(mappedBy: 'reservation', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Insurance $insurance = null;
 
     function __construct(\DateTimeInterface $startDate, \DateTimeInterface $endDate, Car $car, User $user)
@@ -54,6 +54,32 @@ class Reservation
         if ($startDate > $endDate) {
             throw new \InvalidArgumentException("La date de début doit être antérieure à la date de fin.");
         }
+    }
+
+    public function toJson(): array
+    {
+        $user = $this->getCreatedBy();
+
+        $insurance = $this->getInsurance();
+
+        return [
+            'id' => $this->getId(),
+            'startDate' => $this->getStartDate(),
+            'endDate' => $this->getEndDate(),
+            'status' => $this->getStatus(),
+            'totalPrice' => $this->getTotalPrice(),
+            'reservedCar' => $this->getReservedCar(),
+            'createdBy' => [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'firstname' => $user->getFirstname(),
+                'lastname' => $user->getLastname(),
+            ],
+            'insurance' => $insurance ? [
+                'id' => $insurance->getId(),
+                'price' => $insurance->getPrice(),
+            ] : null,
+        ];
     }
 
     public function getId(): ?int
@@ -138,13 +164,8 @@ class Reservation
         return $this->insurance;
     }
 
-    public function setInsurance(Insurance $insurance): static
+    public function setInsurance(?Insurance $insurance): static
     {
-        // set the owning side of the relation if necessary
-        if ($insurance->getReservation() !== $this) {
-            $insurance->setReservation($this);
-        }
-
         $this->insurance = $insurance;
 
         return $this;
