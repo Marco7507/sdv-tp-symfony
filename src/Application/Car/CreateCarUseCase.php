@@ -20,7 +20,7 @@ class CreateCarUseCase
     function execute(User $user, string $model, string $brand, float $pricePerDay): Car
     {
         if (!$user->isAdmin()) {
-            throw new UnauthorizedHttpException('Only admins can create cars.');
+            throw new UnauthorizedHttpException('', 'Only admins can create cars.');
         }
 
         $car = new Car($model, $brand, $pricePerDay);

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -33,7 +35,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    function __construct(string $email, string $password, UserPasswordHasherInterface $hasher)
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $firstname = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $lastname = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $driverLicenseDate = null;
+
+    private function __construct(
+        string $email,
+        string $password,
+        UserPasswordHasherInterface $hasher,
+        bool $isAdmin = false,
+        string $firstName = null,
+        string $lastName = null,
+        \DateTimeInterface $driverLicenseDate = null
+    )
     {
         $this->checkEmail($email);
         $this->checkPassword($password);
@@ -42,6 +61,44 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         $this->email = $email;
         $this->password = $hashPassword;
+
+        $this->roles[] = 'ROLE_USER';
+        if ($isAdmin) {
+            $this->roles[] = 'ROLE_ADMIN';
+        }
+
+        $this->firstname = $firstName;
+        $this->lastname = $lastName;
+        $this->driverLicenseDate = $driverLicenseDate;
+    }
+
+    public static function createCustomer(
+        string $email,
+        string $password,
+        UserPasswordHasherInterface $hasher,
+        string $firstName,
+        string $lastName,
+        \DateTimeInterface $driverLicenseDate
+    ): self
+    {
+        if (empty($firstName) || empty($lastName)) {
+            throw new \InvalidArgumentException("Le prénom et le nom de famille ne peuvent pas être vides.");
+        }
+
+        if ($driverLicenseDate > new \DateTime()) {
+            throw new \InvalidArgumentException("La date de permis de conduire ne peut pas être dans le futur.");
+        }
+
+        return new self($email, $password, $hasher, false, $firstName, $lastName, $driverLicenseDate);
+    }
+
+    public static function createAdmin(
+        string $email,
+        string $password,
+        UserPasswordHasherInterface $hasher
+    ): self
+    {
+        return new self($email, $password, $hasher, true);
     }
 
     private function checkEmail(string $email): void
@@ -147,5 +204,41 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isAdmin()
     {
         return in_array('ROLE_ADMIN', $this->getRoles(), true);
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(?string $firstname): static
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname(?string $lastname): static
+    {
+        $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getDriverLicenseDate(): ?\DateTimeInterface
+    {
+        return $this->driverLicenseDate;
+    }
+
+    public function setDriverLicenseDate(?\DateTimeInterface $driverLicenseDate): static
+    {
+        $this->driverLicenseDate = $driverLicenseDate;
+
+        return $this;
     }
 }
