@@ -143,4 +143,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
+
+    public function isAdmin()
+    {
+        return in_array('ROLE_ADMIN', $this->getRoles(), true);
+    }
 }

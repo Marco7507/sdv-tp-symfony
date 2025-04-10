@@ -22,7 +22,11 @@ final class UserController extends AbstractController
         }
 
         return $this->json([
-            'user' => $user,
-        ]);
+            'user' => [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'roles' => $user->getRoles(),
+            ],
+        ])->setStatusCode(Response::HTTP_OK);
     }
 }
