@@ -1,0 +1,66 @@
+---
+title: Location de voitures
+---
+erDiagram
+    Admin {
+        string id
+        string name
+        string email
+        string password
+    }
+
+    Car {
+        string id
+        string brand
+        string model
+        string pricePerDay
+    }
+
+    Anonymous_User
+
+    Customer {
+        string id
+        string name
+        string email
+        Date driverLicenseObtentionDate
+        string password
+    }
+
+    Reservation {
+        string id
+        string startDate
+        string endDate
+        string totalPrice
+        string status
+    }
+
+    Insurance {
+        string id
+        string price
+    }
+
+    Payment {
+        string id
+        string amount
+        Date paidAt
+    }
+
+    Car ||--o{ Reservation : "est réservée par"
+
+    Reservation ||--o{ Customer : "est effectuée par"
+
+    Reservation ||--o{ Payment : "est réglée par"
+
+    Reservation ||--o{ Insurance : "est couverte par"
+
+    Customer ||--o{ Payment : "est réglée par"
+
+    Admin ||--o{ Car : "gère"
+
+    Anonymous_User ||--o{ Car : "consulte"
+
+    Anonymous_User ||--o{ Customer : "s'inscrit en tant que"
+
+
+
+
