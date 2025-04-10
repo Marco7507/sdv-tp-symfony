@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -44,6 +46,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $driverLicenseDate = null;
 
+    /**
+     * @var Collection<int, Reservation>
+     */
+    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'createdBy')]
+    private Collection $reservations;
+
     private function __construct(
         string $email,
         string $password,
@@ -70,6 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->firstname = $firstName;
         $this->lastname = $lastName;
         $this->driverLicenseDate = $driverLicenseDate;
+        $this->reservations = new ArrayCollection();
     }
 
     public static function createCustomer(
@@ -238,6 +247,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDriverLicenseDate(?\DateTimeInterface $driverLicenseDate): static
     {
         $this->driverLicenseDate = $driverLicenseDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getCreatedBy() === $this) {
+                $reservation->setCreatedBy(null);
+            }
+        }
 
         return $this;
     }
