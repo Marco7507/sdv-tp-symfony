@@ -14,12 +14,12 @@ class Payment
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $type = null;
+    private ?PaymentType $type = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $paidAt = null;
 
-    function __construct(string $paymentType)
+    function __construct(PaymentType $paymentType)
     {
         $this->type = $paymentType;
         $this->paidAt = new \DateTime();
@@ -30,27 +30,13 @@ class Payment
         return $this->id;
     }
 
-    public function getType(): ?string
+    public function getType(): ?PaymentType
     {
         return $this->type;
-    }
-
-    public function setType(string $type): static
-    {
-        $this->type = $type;
-
-        return $this;
     }
 
     public function getPaidAt(): ?\DateTimeInterface
     {
         return $this->paidAt;
-    }
-
-    public function setPaidAt(\DateTimeInterface $paidAt): static
-    {
-        $this->paidAt = $paidAt;
-
-        return $this;
     }
 }

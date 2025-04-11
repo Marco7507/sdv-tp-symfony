@@ -3,17 +3,17 @@
 namespace App\Reservation\CreateReservation;
 
 use App\Car\CarRepository;
+use App\Car\Error\CarNotFoundException;
 use App\Reservation\Reservation;
 use App\User\User;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CreateReservationUseCase
 {
     function __construct(
         private EntityManagerInterface $entityManager,
-        private CarRepository $carRepository,
+        private CarRepository          $carRepository,
     )
     {
     }
@@ -23,7 +23,7 @@ class CreateReservationUseCase
         $car = $this->carRepository->find($carId);
 
         if (!$car) {
-            throw new NotFoundHttpException('Car not found.');
+            throw new CarNotFoundException('Car not found.');
         }
 
         $reservation = new Reservation($startDate, $endDate, $car, $user);

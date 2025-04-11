@@ -25,7 +25,7 @@ class Reservation
     private ?\DateTimeInterface $endDate = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    private ?ReservationStatus $status = null;
 
     #[ORM\Column]
     private ?float $totalPrice = null;
@@ -52,7 +52,7 @@ class Reservation
         $this->endDate = $endDate;
         $this->reservedCar = $car;
         $this->createdBy = $user;
-        $this->status = "CART";
+        $this->status = ReservationStatus::CART;
         $this->totalPrice = $this->calculateTotalPrice();
     }
 
@@ -110,23 +110,9 @@ class Reservation
         return $this->createdBy;
     }
 
-    public function setCreatedBy(?User $createdBy): static
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
     public function getInsurance(): ?Insurance
     {
         return $this->insurance;
-    }
-
-    public function setInsurance(?Insurance $insurance): static
-    {
-        $this->insurance = $insurance;
-
-        return $this;
     }
 
     public function getId(): ?int
@@ -139,35 +125,14 @@ class Reservation
         return $this->startDate;
     }
 
-    public function setStartDate(\DateTimeInterface $startDate): static
-    {
-        $this->startDate = $startDate;
-
-        return $this;
-    }
-
     public function getEndDate(): ?\DateTimeInterface
     {
         return $this->endDate;
     }
 
-    public function setEndDate(\DateTimeInterface $endDate): static
-    {
-        $this->endDate = $endDate;
-
-        return $this;
-    }
-
-    public function getStatus(): ?string
+    public function getStatus(): ?ReservationStatus
     {
         return $this->status;
-    }
-
-    public function setStatus(string $status): static
-    {
-        $this->status = $status;
-
-        return $this;
     }
 
     public function getTotalPrice(): ?float
@@ -175,27 +140,22 @@ class Reservation
         return $this->totalPrice;
     }
 
-    public function setTotalPrice(float $totalPrice): static
-    {
-        $this->totalPrice = $totalPrice;
-
-        return $this;
-    }
-
     public function getReservedCar(): ?Car
     {
         return $this->reservedCar;
     }
 
-    public function setReservedCar(?Car $reservedCar): static
+    public function addInsurance(Insurance $insurance, $user): void
     {
-        $this->reservedCar = $reservedCar;
 
-        return $this;
-    }
+        if ($this->getStatus() !== "CART") {
+            throw new \InvalidArgumentException('Insurance can only be added to reservations with status CART.');
+        }
 
-    public function addInsurance(Insurance $insurance): void
-    {
+        if ($this->getCreatedBy() !== $user) {
+            throw new \InvalidArgumentException('You are not authorized to add insurance to this reservation.');
+        }
+
         $this->insurance = $insurance;
         $this->totalPrice = $this->calculateTotalPrice();
     }
@@ -209,18 +169,11 @@ class Reservation
     public function addPayment(Payment $payment): void
     {
         $this->payment = $payment;
-        $this->status = "PAID";
+        $this->status = ReservationStatus::PAID;
     }
 
     public function getPayment(): ?Payment
     {
         return $this->payment;
-    }
-
-    public function setPayment(?Payment $payment): static
-    {
-        $this->payment = $payment;
-
-        return $this;
     }
 }

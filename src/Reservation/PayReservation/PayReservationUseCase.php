@@ -3,6 +3,7 @@
 namespace App\Reservation\PayReservation;
 
 use App\Reservation\Payment;
+use App\Reservation\PaymentType;
 use App\Reservation\ReservationRepository;
 use App\User\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,7 +17,7 @@ class PayReservationUseCase
     {
     }
 
-    function execute(int $reservationId, User $user, string $paymentType): void
+    function execute(int $reservationId, User $user, PaymentType $paymentType): void
     {
         $reservation = $this->reservationRepository->find($reservationId);
 

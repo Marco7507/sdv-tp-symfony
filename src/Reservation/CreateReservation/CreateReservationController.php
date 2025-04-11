@@ -2,6 +2,7 @@
 
 namespace App\Reservation\CreateReservation;
 
+use App\Car\Error\CarNotFoundException;
 use App\User\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,6 +53,14 @@ final class CreateReservationController extends AbstractController
 
             return $this->json($reservation->toJson(), Response::HTTP_CREATED);
         } catch (\Exception $e) {
+            if ($e instanceof CarNotFoundException) {
+                return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            }
+
+            if ($e instanceof \InvalidArgumentException) {
+                return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            }
+
             return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

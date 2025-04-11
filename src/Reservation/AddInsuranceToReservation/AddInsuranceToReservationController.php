@@ -2,6 +2,8 @@
 
 namespace App\Reservation\AddInsuranceToReservation;
 
+use App\Insurance\Error\InsuranceNotFoundException;
+use App\Reservation\Error\ReservationNotFoundException;
 use App\User\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,6 +45,14 @@ final class AddInsuranceToReservationController extends AbstractController
 
             return $this->json(['message' => 'Insurance added successfully']);
         } catch (\Exception $e) {
+            if ($e instanceof InsuranceNotFoundException || $e instanceof ReservationNotFoundException) {
+                return $this->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+            }
+
+            if ($e instanceof \InvalidArgumentException) {
+                return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            }
+            
             return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

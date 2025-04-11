@@ -2,19 +2,18 @@
 
 namespace App\Car\CreateCar;
 
+use App\User\Error\UnauthorizeUserException;
 use App\User\User;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class CreateCarController extends AbstractController
 {
     function __construct(private CreateCarUseCase $createCarUseCase)
     {
-
     }
 
     #[Route('/cars', name: 'cars', methods: ['POST'])]
@@ -44,7 +43,7 @@ final class CreateCarController extends AbstractController
 
             return $this->json($car, Response::HTTP_CREATED);
         } catch (\Exception $e) {
-            if ($e instanceof UnauthorizedHttpException) {
+            if ($e instanceof UnauthorizeUserException) {
                 return $this->json([
                     'error' => $e->getMessage(),
                 ], Response::HTTP_FORBIDDEN);

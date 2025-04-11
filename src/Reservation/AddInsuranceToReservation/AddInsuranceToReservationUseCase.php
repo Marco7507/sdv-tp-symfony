@@ -2,7 +2,9 @@
 
 namespace App\Reservation\AddInsuranceToReservation;
 
+use App\Insurance\Error\InsuranceNotFoundException;
 use App\Insurance\InsuranceRepository;
+use App\Reservation\Error\ReservationNotFoundException;
 use App\Reservation\ReservationRepository;
 use App\User\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,23 +23,16 @@ class AddInsuranceToReservationUseCase
     {
         $reservation = $this->reservationRepository->find($reservationId);
         if (!$reservation) {
-            throw new \Exception('Reservation not found.');
+            throw new ReservationNotFoundException('Reservation not found.');
         }
 
-        if ($reservation->getStatus() !== "CART") {
-            throw new \Exception('Insurance can only be added to reservations with status CART.');
-        }
-
-        if ($reservation->getCreatedBy() !== $user) {
-            throw new \Exception('You are not authorized to add insurance to this reservation.');
-        }
 
         $insurance = $this->insuranceRepository->find($insuranceId);
         if (!$insurance) {
-            throw new \Exception('Insurance not found.');
+            throw new InsuranceNotFoundException('Insurance not found.');
         }
 
-        $reservation->addInsurance($insurance);
+        $reservation->addInsurance($insurance, $user);
 
         try {
             $this->entityManager->persist($reservation);

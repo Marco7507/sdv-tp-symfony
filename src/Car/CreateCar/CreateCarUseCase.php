@@ -3,10 +3,10 @@
 namespace App\Car\CreateCar;
 
 use App\Car\Car;
+use App\User\Error\UnauthorizeUserException;
 use App\User\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class CreateCarUseCase
 {
@@ -20,7 +20,7 @@ class CreateCarUseCase
     function execute(User $user, string $model, string $brand, float $pricePerDay): Car
     {
         if (!$user->isAdmin()) {
-            throw new UnauthorizedHttpException('', 'Only admins can create cars.');
+            throw new UnauthorizeUserException('Only admins can create cars.');
         }
 
         $car = new Car($model, $brand, $pricePerDay);
