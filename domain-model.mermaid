@@ -30,8 +30,6 @@ erDiagram
         string id
         string startDate
         string endDate
-        string totalPrice
-        string status
     }
 
     Insurance {
@@ -45,13 +43,19 @@ erDiagram
         Date paidAt
     }
 
+    Command {
+        string id
+        string status
+        string totalPrice
+    }
+
     Car ||--o{ Reservation : "est réservée par"
 
-    Reservation ||--o{ Customer : "est effectuée par"
+    Command ||--o{ Customer : "est effectuée par"
 
-    Reservation ||--o{ Payment : "est réglée par"
+    Command ||--o{ Payment : "est réglée par"
 
-    Reservation ||--o{ Insurance : "est couverte par"
+    Command ||--o{ Insurance : "est couverte par"
 
     Customer ||--o{ Payment : "est réglée par"
 
@@ -60,6 +64,8 @@ erDiagram
     Anonymous_User ||--o{ Car : "consulte"
 
     Anonymous_User ||--o{ Customer : "s'inscrit en tant que"
+
+    Command ||--o{ Reservation : "possède une liste de"
 
 
 
