@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ReservationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource]
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 class Reservation
 {
@@ -34,8 +36,11 @@ class Reservation
     #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne]
     private ?Insurance $insurance = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Payment $payment = null;
 
     function __construct(\DateTimeInterface $startDate, \DateTimeInterface $endDate, Car $car, User $user)
     {
@@ -46,7 +51,7 @@ class Reservation
         $this->reservedCar = $car;
         $this->createdBy = $user;
         $this->status = "CART";
-        $this->totalPrice = ($car->getPricePerDay() * ($endDate->diff($startDate)->days));
+        $this->totalPrice = $this->calculateTotalPrice();
     }
 
     private function checkDate(\DateTimeInterface $startDate, \DateTimeInterface $endDate): void
@@ -80,6 +85,40 @@ class Reservation
                 'price' => $insurance->getPrice(),
             ] : null,
         ];
+    }
+
+    private function calculateTotalPrice()
+    {
+        $totalPrice = 0;
+
+        $interval = $this->startDate->diff($this->endDate);
+        $days = $interval->days;
+
+        $totalPrice += $days * $this->reservedCar->getPricePerDay();
+
+        if ($this->insurance) {
+            $totalPrice += $this->insurance->getPrice();
+        }
+
+        return $totalPrice;
+    }
+
+    public function addInsurance(Insurance $insurance): void
+    {
+        $this->insurance = $insurance;
+        $this->totalPrice = $this->calculateTotalPrice();
+    }
+
+    public function removeInsurance(): void
+    {
+        $this->insurance = null;
+        $this->totalPrice = $this->calculateTotalPrice();
+    }
+
+    public function addPayment(Payment $payment): void
+    {
+        $this->payment = $payment;
+        $this->status = "PAID";
     }
 
     public function getId(): ?int
@@ -167,6 +206,18 @@ class Reservation
     public function setInsurance(?Insurance $insurance): static
     {
         $this->insurance = $insurance;
+
+        return $this;
+    }
+
+    public function getPayment(): ?Payment
+    {
+        return $this->payment;
+    }
+
+    public function setPayment(?Payment $payment): static
+    {
+        $this->payment = $payment;
 
         return $this;
     }

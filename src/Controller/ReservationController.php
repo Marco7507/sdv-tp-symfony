@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Application\Reservation\AddInsuranceUseCase;
 use App\Application\Reservation\CreateReservationUseCase;
 use App\Application\Reservation\ListReservationsUseCase;
 use App\Entity\User;
@@ -14,7 +15,8 @@ final class ReservationController extends AbstractController
 {
     function __construct(
         private ListReservationsUseCase  $listReservationsUseCase,
-        private CreateReservationUseCase $createReservationUseCase
+        private CreateReservationUseCase $createReservationUseCase,
+        private AddInsuranceUseCase      $addInsuranceUseCase,
     )
     {
     }
@@ -70,6 +72,37 @@ final class ReservationController extends AbstractController
             }, $reservations);
 
             return $this->json($serializedReservations);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/reservations/{id}/add-insurance', name: 'add_insurance_to_reservation', methods: ['PUT'])]
+    public function addInsurance(Request $request): Response
+    {
+        $parameters = json_decode($request->getContent(), true);
+        $insuranceId = $parameters['insuranceId'] ?? null;
+
+        if (!$insuranceId) {
+            return $this->json([
+                'error' => 'Insurance ID is required',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $reservationId = (int)$request->attributes->get('id');
+
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json([
+                'error' => 'User must be logged in to add insurance to a reservation',
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        try {
+            $this->addInsuranceUseCase->execute($reservationId, $insuranceId, $user);
+
+            return $this->json(['message' => 'Insurance added successfully']);
         } catch (\Exception $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

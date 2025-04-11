@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CarRepository;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 
+#[ApiResource]
 #[ORM\Entity(repositoryClass: CarRepository::class)]
 class Car
 {
