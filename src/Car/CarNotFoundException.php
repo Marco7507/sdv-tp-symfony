@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Car\Error;
+namespace App\Car;
 
 class CarNotFoundException extends \Exception
 {

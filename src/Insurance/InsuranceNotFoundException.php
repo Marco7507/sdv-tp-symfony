@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Insurance\Error;
+namespace App\Insurance;
 
 class InsuranceNotFoundException extends \Exception
 {

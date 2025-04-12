@@ -2,7 +2,7 @@
 
 namespace App\Reservation\CreateReservation;
 
-use App\Car\Error\CarNotFoundException;
+use App\Car\CarNotFoundException;
 use App\User\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

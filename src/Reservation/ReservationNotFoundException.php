@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Reservation\Error;
+namespace App\Reservation;
 
 class ReservationNotFoundException extends \Exception
 {

@@ -2,9 +2,9 @@
 
 namespace App\Reservation\AddInsuranceToReservation;
 
-use App\Insurance\Error\InsuranceNotFoundException;
+use App\Insurance\InsuranceNotFoundException;
 use App\Insurance\InsuranceRepository;
-use App\Reservation\Error\ReservationNotFoundException;
+use App\Reservation\ReservationNotFoundException;
 use App\Reservation\ReservationRepository;
 use App\User\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,7 +25,6 @@ class AddInsuranceToReservationUseCase
         if (!$reservation) {
             throw new ReservationNotFoundException('Reservation not found.');
         }
-
 
         $insurance = $this->insuranceRepository->find($insuranceId);
         if (!$insurance) {

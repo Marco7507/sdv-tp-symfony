@@ -2,8 +2,8 @@
 
 namespace App\Reservation\CreateReservation;
 
+use App\Car\CarNotFoundException;
 use App\Car\CarRepository;
-use App\Car\Error\CarNotFoundException;
 use App\Reservation\Reservation;
 use App\User\User;
 use DateTimeInterface;

@@ -26,16 +26,45 @@ class Car
 
     function __construct(string $model, string $brand, float $pricePerDay)
     {
-        if (empty($model) || empty($brand)) {
-            throw new InvalidArgumentException("Le modèle et la marque de la voiture ne peuvent pas être vides.");
-        }
-        if ($pricePerDay <= 0) {
-            throw new InvalidArgumentException("Le prix par jour doit être supérieur à 0.");
-        }
+        $this->checkModel($model);
+        $this->checkBrand($brand);
+        $this->checkPricePerDay($pricePerDay);
 
         $this->model = $model;
         $this->brand = $brand;
         $this->pricePerDay = $pricePerDay;
+    }
+
+    public function update(string $model, string $brand, float $pricePerDay)
+    {
+        $this->checkModel($model);
+        $this->checkBrand($brand);
+        $this->checkPricePerDay($pricePerDay);
+
+        $this->model = $model;
+        $this->brand = $brand;
+        $this->pricePerDay = $pricePerDay;
+    }
+
+    private function checkModel(string $model): void
+    {
+        if (empty($model)) {
+            throw new InvalidArgumentException("Le modèle de la voiture ne peut pas être vide.");
+        }
+    }
+
+    private function checkBrand(string $brand): void
+    {
+        if (empty($brand)) {
+            throw new InvalidArgumentException("La marque de la voiture ne peut pas être vide.");
+        }
+    }
+
+    private function checkPricePerDay(string $pricePerDay): void
+    {
+        if ($pricePerDay <= 0) {
+            throw new InvalidArgumentException("Le prix par jour doit être supérieur à 0.");
+        }
     }
 
     public function getId(): ?int

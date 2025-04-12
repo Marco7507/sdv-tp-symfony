@@ -2,8 +2,8 @@
 
 namespace App\Reservation\AddInsuranceToReservation;
 
-use App\Insurance\Error\InsuranceNotFoundException;
-use App\Reservation\Error\ReservationNotFoundException;
+use App\Insurance\InsuranceNotFoundException;
+use App\Reservation\ReservationNotFoundException;
 use App\User\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

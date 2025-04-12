@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class PayReservationController extends AbstractController
 {
-    #[Route('/reservations/{id}/pay', name: 'app_pay_reservation')]
+    #[Route('/reservations/{id}/pay', name: 'app_pay_reservation', methods: ['POST'])]
     public function index(): JsonResponse
     {
         return $this->json([
