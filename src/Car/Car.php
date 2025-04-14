@@ -77,34 +77,13 @@ class Car
         return $this->model;
     }
 
-    public function setModel(string $model): static
-    {
-        $this->model = $model;
-
-        return $this;
-    }
-
     public function getBrand(): ?string
     {
         return $this->brand;
     }
 
-    public function setBrand(string $brand): static
-    {
-        $this->brand = $brand;
-
-        return $this;
-    }
-
     public function getPricePerDay(): ?float
     {
         return $this->pricePerDay;
-    }
-
-    public function setPricePerDay(float $pricePerDay): static
-    {
-        $this->pricePerDay = $pricePerDay;
-
-        return $this;
     }
 }
